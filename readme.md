@@ -1,0 +1,1 @@
+zależności: npm isntall express sqlite3, uruchomienie projektu: node app.js

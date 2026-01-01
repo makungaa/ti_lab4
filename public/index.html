@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <title>Filmy i oceny – Lab04</title>
+    <style>
+        body { font-family: Arial; margin: 30px; }
+        h2 { margin-top: 40px; }
+        table { border-collapse: collapse; width: 100%; margin-bottom: 20px; }
+        th, td { border: 1px solid #ccc; padding: 6px; text-align: left; }
+        input, select { padding: 4px; }
+        button { padding: 4px 8px; }
+        .box { border: 1px solid #ccc; padding: 10px; margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+
+<h1>Filmy (lab4)</h1>
+
+<h2>Dodaj film</h2>
+<div class="box">
+    <input id="movieTitle" placeholder="Tytuł filmu">
+    <input id="movieYear" type="number" placeholder="Rok">
+    <button onclick="addMovie()">Dodaj</button>
+</div>
+
+<h2>Ranking filmów</h2>
+<table id="movies">
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Tytuł</th>
+        <th>Rok</th>
+        <th>Średnia</th>
+        <th>Głosy</th>
+        <th>Oceń</th>
+    </tr>
+    </thead>
+    <tbody></tbody>
+</table>
+
+<script>
+    async function loadMovies() {
+        const res = await fetch('/api/movies');
+        const movies = await res.json();
+
+        const tbody = document.querySelector('#movies tbody');
+        tbody.innerHTML = '';
+
+        movies.forEach(m => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+      <td>${m.Id}</td>
+      <td>${m.Title}</td>
+      <td>${m.Year}</td>
+      <td>${m.AvgScore.toFixed(2)}</td>
+      <td>${m.Votes}</td>
+      <td>
+        <select id="score-${m.Id}">
+          <option value="1">1</option>
+          <option value="2">2</option>
+          <option value="3">3</option>
+          <option value="4">4</option>
+          <option value="5">5</option>
+        </select>
+        <button onclick="rate(${m.Id})">OK</button>
+      </td>
+    `;
+            tbody.appendChild(tr);
+        });
+    }
+
+    async function addMovie() {
+        const title = document.getElementById('movieTitle').value;
+        const year = document.getElementById('movieYear').value;
+
+        if (!title || !year) {
+            alert('Tytuł i rok są wymagane');
+            return;
+        }
+
+        const res = await fetch('/api/movies', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ title, year })
+        });
+
+        if (res.ok) {
+            document.getElementById('movieTitle').value = '';
+            document.getElementById('movieYear').value = '';
+            loadMovies();
+        } else {
+            const err = await res.json();
+            alert(err.error || 'Błąd');
+        }
+    }
+
+    async function rate(movieId) {
+        const score = document.getElementById(`score-${movieId}`).value;
+
+        const res = await fetch('/api/ratings', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                movie_id: movieId,
+                score: Number(score)
+            })
+        });
+
+        if (res.ok) {
+            loadMovies();
+        } else {
+            const err = await res.json();
+            alert(err.error || 'Błąd');
+        }
+    }
+
+    loadMovies();
+</script>
+
+</body>
+</html>
