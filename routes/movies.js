@@ -33,25 +33,43 @@ router.get('/', (req, res) => {
 router.post('/', (req, res) => {
     const { title, year } = req.body;
 
-    if (!title || !year) {
+    if (!title || year === undefined) {
         return res.status(400).json({
-            error: 'tytuł i rok wymagane'
+            error: 'tytul i rok sa wymagane'
+        });
+    }
+
+    const yearNum = Number(year);
+
+    if (!Number.isInteger(yearNum) || yearNum < 1888) {
+        return res.status(422).json({
+            error: 'rok musi byc poprawnym numerem'
         });
     }
 
     db.run(
         'INSERT INTO Movies(Title, Year) VALUES (?, ?)',
-        [title, year],
+        [title, yearNum],
         function (err) {
-            if (err) return res.status(500).json(err);
+            if (err) {
+                return res.status(500).json({
+                    error: 'blad bazy'
+                });
+            }
 
-            res.status(201).json({
-                id: this.lastID,
-                title,
-                year
-            });
+            res
+                .status(201)
+                .set('Location', `/api/movies/${this.lastID}`)
+                .json({
+                    id: this.lastID,
+                    title,
+                    year: yearNum
+                });
         }
     );
 });
+
+
+
 
 module.exports = router;

@@ -36,7 +36,7 @@ router.post('/', (req, res) => {
                 function (err) {
                     if (err) return res.status(500).json(err);
 
-                    res.status(201).json({
+                    res.status(201).set('Location', `/api/ratings/${movie_id}`).json({
                         id: this.lastID,
                         movie_id,
                         score

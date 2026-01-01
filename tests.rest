@@ -1,0 +1,109 @@
+@baseUrl = http://localhost:3000
+
+### --------------------------------
+### GET - lista filmów (ranking)
+### --------------------------------
+GET {{baseUrl}}/api/movies
+Accept: application/json
+
+
+### --------------------------------
+### POST - dodanie filmu (OK)
+### --------------------------------
+POST {{baseUrl}}/api/movies
+Content-Type: application/json
+
+{
+  "title": "Interstellar",
+  "year": 2014
+}
+
+
+### --------------------------------
+### POST - dodanie filmu (year jako string - OK)
+### --------------------------------
+POST {{baseUrl}}/api/movies
+Content-Type: application/json
+
+{
+  "title": "Matrix",
+  "year": "1999"
+}
+
+
+### --------------------------------
+### POST - dodanie filmu (BŁĄD: brak year)
+### --------------------------------
+POST {{baseUrl}}/api/movies
+Content-Type: application/json
+
+{
+  "title": "Film bez roku"
+}
+
+
+### --------------------------------
+### POST - dodanie filmu (BŁĄD: zły rok)
+### --------------------------------
+POST {{baseUrl}}/api/movies
+Content-Type: application/json
+
+{
+  "title": "Film zły",
+  "year": 1500
+}
+
+
+### --------------------------------
+### POST - dodanie oceny (OK)
+### --------------------------------
+POST {{baseUrl}}/api/ratings
+Content-Type: application/json
+
+{
+  "movie_id": 1,
+  "score": 5
+}
+
+
+### --------------------------------
+### POST - dodanie oceny (OK)
+### --------------------------------
+POST {{baseUrl}}/api/ratings
+Content-Type: application/json
+
+{
+  "movie_id": 1,
+  "score": 4
+}
+
+
+### --------------------------------
+### POST - dodanie oceny (BŁĄD: score poza zakresem)
+### --------------------------------
+POST {{baseUrl}}/api/ratings
+Content-Type: application/json
+
+{
+  "movie_id": 1,
+  "score": 6
+}
+
+
+### --------------------------------
+### POST - dodanie oceny (BŁĄD: film nie istnieje)
+### --------------------------------
+POST {{baseUrl}}/api/ratings
+Content-Type: application/json
+
+{
+  "movie_id": 999,
+  "score": 5
+}
+
+
+### --------------------------------
+### GET - ranking po dodaniu ocen
+### --------------------------------
+GET {{baseUrl}}/api/movies
+Accept: application/json
