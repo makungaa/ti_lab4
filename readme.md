@@ -20,7 +20,7 @@
 W katalogu projektu:
 
 ```bash
-npm install
+npm install sqlite3 express
 ```
 
 ---
